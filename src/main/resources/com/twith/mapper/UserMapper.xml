@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.twith.mapper.UserMapper">
+	<insert id="join">
+		INSERT INTO TW_USER (USERNUM,USERID,USERPW,USERNAME,USERNICKNAME,USERPHONE,USEREMAIL,USERREGDATE)
+		VALUES(TW_USER_SEQ.NEXTVAL,#{userId},#{userPw},#{userName},#{userNickname},#{userPhone},#{userEmail},SYSDATE)
+	</insert>
+	<select id="checkId" resultType="_int">
+		SELECT COUNT(*) FROM TW_USER WHERE USERID = #{userId}
+	</select>
+	<select id="login" resultType="com.twith.domain.UserDTO">
+		SELECT * FROM TW_USER WHERE USERID=#{userId} AND USERPW=#{userPw}
+	</select>
+	<select id="getList" resultType="com.twith.domain.UserDTO">
+		SELECT FRIENDID, REQUESTDATE FROM TW_FRIEND WHERE USERID=#{userId}
+	</select>
+	<select id="getUser" resultType="com.twith.domain.UserDTO">
+		SELECT * FROM TW_USER WHERE USEREMAIL=#{userEmail}
+	</select>
+	<update id="updatePw">
+		UPDATE TW_USER SET USERPW = #{userPw} WHERE USERID = #{userId}
+	</update>
+</mapper>

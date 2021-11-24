@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.twith.mapper.FollowMapper">
+	<sql id="criteria">
+		<if test="keyword != null and type != null">
+			<trim prefixOverrides="OR" prefix="(" suffix=") AND">
+				<foreach item="type" collection="typeArr"><!-- getTypeArr() -->
+					<trim prefix="OR">
+						<choose>
+							<when test="type=='U'.toString()">
+								(USERID LIKE '%'||#{keyword}||'%')
+							</when>
+							<when test="type=='N'.toString()">
+								(USERNICKNAME LIKE '%'||#{keyword}||'%')
+							</when>
+							<when test="type=='W'.toString()">
+								(USERNAME LIKE '%'||#{keyword}||'%')
+							</when>
+						</choose>
+					</trim>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	
+	<sql id="fcriteria">
+		<if test="keyword != null and type != null">
+			<trim prefixOverrides="OR" prefix="(" suffix=") AND">
+				<foreach item="type" collection="typeArr"><!-- getTypeArr() -->
+					<trim prefix="OR">
+						<choose>
+							<when test="type=='U'.toString()">
+								(FOLLOWID LIKE '%'||#{keyword}||'%')
+							</when>
+							<when test="type=='N'.toString()">
+								(USERNICKNAME LIKE '%'||#{keyword}||'%')
+							</when>
+							<when test="type=='W'.toString()">
+								(USERNAME LIKE '%'||#{keyword}||'%')
+							</when>
+						</choose>
+					</trim>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	
+	<select id="getFollowingList" resultType="com.twith.domain.FollowDTO">
+			SELECT FOLLOWNUM, USERID, FOLLOWID, FOLLOWDATE FROM TW_FOLLOW WHERE USERID=#{userId}
+	</select>
+	<select id="getFollowerList" resultType="com.twith.domain.FollowDTO">
+			SELECT FOLLOWNUM, USERID, FOLLOWID, FOLLOWDATE FROM TW_FOLLOW WHERE FOLLOWID=#{userId}
+	</select>
+	<select id="getFollowingListWithPaging" resultType="com.twith.domain.FollowDTO">
+		<![CDATA[
+			SELECT FOLLOWNUM,USERID,FOLLOWID,FOLLOWDATE
+			FROM
+				(SELECT /*+ INDEX_DESC(TW_FOLLOW TW_FOLLOW_PK)*/ ROWNUM RN,FOLLOWNUM,USERID,FOLLOWID,FOLLOWDATE
+				FROM TW_FOLLOW WHERE USERID=#{userId} AND
+		]]>	
+		<include refid="fcriteria"></include>
+		<![CDATA[
+			ROWNUM<=#{pageNum}*#{amount})
+			WHERE RN>(#{pageNum}-1)*#{amount}
+		]]>
+		
+	</select>
+	
+	<select id="getFollowerListWithPaging" resultType="com.twith.domain.FollowDTO">
+		<![CDATA[
+			SELECT FOLLOWNUM,USERID,FOLLOWID,FOLLOWDATE
+			FROM
+				(SELECT /*+ INDEX_DESC(TW_FOLLOW TW_FOLLOW_PK)*/ ROWNUM RN,FOLLOWNUM,USERID,FOLLOWID,FOLLOWDATE
+				FROM TW_FOLLOW WHERE FOLLOWID=#{userId} AND
+		]]>	
+		<include refid="criteria"></include>
+		<![CDATA[
+			ROWNUM<=#{pageNum}*#{amount})
+			WHERE RN>(#{pageNum}-1)*#{amount}
+		]]>
+		
+	</select>
+	
+	<select id="getFollowingTotal" resultType="_int">
+		SELECT COUNT(*) FROM TW_FOLLOW WHERE 
+			<include refid="fcriteria"></include>	
+		FOLLOWNUM>0 AND USERID=#{userId}
+	</select>
+	
+	<select id="getFollowerTotal" resultType="_int">
+		SELECT COUNT(*) FROM TW_FOLLOW WHERE 
+			<include refid="criteria"></include>	
+		FOLLOWNUM>0 AND FOLLOWID=#{userId}
+	</select>
+	
+	<select id="checkFollowId" resultType="_int">
+		SELECT COUNT(*) FROM TW_FOLLOW WHERE USERID = #{userId} AND FOLLOWID = #{followId}
+	</select>
+	<delete id="delete">
+		DELETE FROM TW_FOLLOW WHERE FOLLOWNUM=#{followNum}
+	</delete>
+	
+	<delete id="deleteFollower">
+		DELETE FROM TW_FOLLOW WHERE FOLLOWNUM=#{followNum}
+	</delete>
+	
+	<insert id="addFollow">
+		INSERT INTO TW_FOLLOW (FOLLOWNUM,USERID,FOLLOWID,FOLLOWDATE)
+		VALUES(TW_FOLLOW_SEQ.NEXTVAL,#{userId},#{followId},SYSDATE)
+	</insert>
+	
+	
+	
+	<!-- 유저 검색 -->
+	<select id="getUserList" resultType="com.twith.domain.UserDTO">
+		<![CDATA[
+			SELECT * FROM TW_USER WHERE USERNUM>0
+		]]>
+	</select>
+	<select id="getUserListWithPaging" resultType="com.twith.domain.UserDTO">
+		<![CDATA[
+			SELECT USERNUM,USERID,USERNICKNAME,USERREGDATE
+			FROM
+				(SELECT /*+ INDEX_DESC(TW_USER TW_USER_PK)*/ ROWNUM RN,USERNUM,USERID,USERNICKNAME,USERREGDATE
+				FROM TW_USER WHERE
+		]]>	
+		<include refid="criteria"></include>
+		<![CDATA[
+			ROWNUM<=#{pageNum}*#{amount})
+			WHERE RN>(#{pageNum}-1)*#{amount}
+		]]>
+	</select>
+	
+	<select id="getUserTotal" resultType="_int">
+		SELECT COUNT(*) FROM TW_USER WHERE 
+		<include refid="criteria"></include>		
+		USERNUM>0
+	</select>
+</mapper>

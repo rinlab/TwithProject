@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.twith.mapper.ShopReplyMapper">
+	<insert id="insert">
+		INSERT INTO TW_SREPLY (SREPLYNUM,USERID,SREPLYCONTENTS,SREPLYPRICE,SHOPNUM,SREPLYREGDATE)
+		VALUES(TW_SREPLY_SEQ.NEXTVAL,#{userId},#{sreplyContents},#{sreplyPrice},#{shopNum},SYSDATE)
+	</insert>
+	
+	<select id="getTotal" resultType="_int">
+		SELECT COUNT(*) FROM TW_SREPLY WHERE SHOPNUM=#{shopNum}
+	</select>
+	<select id="getListWithPaging" resultType="com.twith.domain.ShopReplyDTO">
+		<![CDATA[
+			SELECT SREPLYNUM,USERID,SREPLYCONTENTS,SREPLYPRICE,SREPLYREGDATE,SREPLYUPDDATE,SHOPNUM
+			FROM
+				(
+					SELECT /*+ INDEX_ASC(TW_SREPLY SREPLY_PK) */
+					ROWNUM RN, SREPLYNUM, USERID,SREPLYCONTENTS,SREPLYPRICE,SREPLYREGDATE,SREPLYUPDDATE,SHOPNUM FROM TW_SREPLY
+					WHERE SHOPNUM=#{shopNum} AND ROWNUM <= #{cri.pageNum} * #{cri.amount}
+				)
+			WHERE RN > (#{cri.pageNum}-1)*#{cri.amount}
+		]]>
+	</select>
+	
+	<delete id="delete">
+		DELETE FROM TW_SREPLY WHERE SREPLYNUM=#{SReplyNum}
+	</delete>
+	
+	<delete id="deleteAll">
+		DELETE FROM TW_SREPLY WHERE SHOPNUM=#{shopNum}
+	</delete>
+	
+	<update id="update">
+		UPDATE TW_SREPLY
+		SET SREPLYCONTENTS=#{sreplyContents},SREPLYPRICE=#{sreplyPrice}, SREPLYUPDDATE = SYSDATE
+		WHERE SREPLYNUM=#{sreplyNum}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.twith.mapper.MoimMapper">
+	<sql id="criteria">
+		<if test="keyword != null and type != null">
+			<trim prefixOverrides="OR" prefix="(" suffix=") AND">
+				<foreach item="type" collection="typeArr"><!-- getTypeArr() -->
+					<trim prefix="OR">
+						<choose>
+							<when test="type=='T'.toString()">
+								(RECRUITTITLE LIKE '%'||#{keyword}||'%')
+							</when>
+							<when test="type=='C'.toString()">
+								(RECRUITCONTENTS LIKE '%'||#{keyword}||'%')
+							</when>
+							<when test="type=='W'.toString()">
+								(USERID LIKE '%'||#{keyword}||'%')
+							</when>
+						</choose>
+					</trim>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getList" resultType="com.twith.domain.BoardDTO">
+		<![CDATA[
+			SELECT * FROM SPRING_BOARD WHERE BOARDNUM>0
+		]]>
+	</select>
+
+	<select id="getMymoim" resultType="_int">
+		SELECT MOIMNUM FROM
+		TW_MOIMMEMBER WHERE USERID=#{userid}
+	</select>
+
+	<select id="getMoimDetail" resultType="com.twith.domain.MoimDTO">
+		SELECT * FROM TW_MOIM
+		WHERE MOIMNUM=#{moimnum}
+	</select>
+
+	<select id="getPlaceDetail"
+		resultType="com.twith.domain.PlaceDTO">
+		SELECT * FROM TW_PLACE WHERE PLACENUM=#{placenum}
+	</select>
+
+	<select id="checkPlace" resultType="_int">
+		SELECT COUNT(*) FROM TW_PLACE
+		WHERE PLACENAME=#{placename} AND
+		PLACEADDR=#{placeaddr}
+	</select>
+
+	<select id="getPlacenum" resultType="_int">
+		SELECT PLACENUM FROM
+		TW_PLACE WHERE PLACENAME=#{placename} AND
+		PLACEADDR=#{placeaddr}
+	</select>
+
+	<select id="getMembers" resultType="string">
+		SELECT USERID FROM
+		TW_MOIMMEMBER WHERE MOIMNUM=#{moimnum}
+	</select>
+
+	<select id="getListWithPaging"
+		resultType="com.twith.domain.RecruitDTO">
+	   <![CDATA[
+	      SELECT RECRUITNUM, RECRUITTITLE, USERID, RECRUITCONTENTS, READCNT, MOIMNUM, REGDATE
+	      FROM
+	         (SELECT /*+ INDEX_DESC(TW_MOIMRECRUIT RECRUIT_PK)*/
+	         ROWNUM RN, RECRUITNUM, RECRUITTITLE, USERID, RECRUITCONTENTS, READCNT, MOIMNUM, REGDATE
+	         FROM TW_MOIMRECRUIT WHERE 
+	   ]]>
+		<include refid="criteria"></include>
+	   <![CDATA[   
+	         ROWNUM<=#{pageNum}*#{amount})
+	      WHERE RN>(#{pageNum}-1)*#{amount}
+	   ]]>
+	</select>
+	<select id="getTotal" resultType="_int">
+		SELECT COUNT(*) FROM TW_MOIMRECRUIT WHERE
+		<include refid="criteria"></include>
+		RECRUITNUM>0
+	</select>
+	<select id="read" resultType="com.twith.domain.RecruitDTO">
+		SELECT * FROM TW_MOIMRECRUIT WHERE
+		RECRUITNUM=#{recruitnum}
+	</select>
+
+	<select id="getMemberDetail"
+		resultType="com.twith.domain.UserDTO">
+		SELECT * FROM TW_USER WHERE USERID=#{userId}
+	</select>
+
+	<select id="getMoimById" resultType="com.twith.domain.MoimDTO">
+		SELECT * FROM TW_MOIM WHERE
+		USERID=#{login_id}
+	</select>
+
+	<select id="getApplicant"
+		resultType="com.twith.domain.MoimJoinDTO">
+		SELECT * FROM TW_MOIMJOIN WHERE MOIMNUM=#{moimnum}
+	</select>
+
+	<select id="getJoinDetail"
+		resultType="com.twith.domain.MoimJoinDTO">
+		SELECT * FROM TW_MOIMJOIN WHERE MOIMJOINNUM=#{moimjoinnum}
+	</select>
+
+	<select id="getChat" resultType="com.twith.domain.MoimChatDTO">
+		SELECT * FROM TW_MOIMCHAT WHERE
+		MOIMNUM=#{moimnum}
+	</select>
+	<select id="getFireDetail"
+		resultType="com.twith.domain.FireMoimDTO">
+		SELECT * FROM TW_FIREMOIM WHERE USERID=#{userId} AND
+		MOIMNUM=#{moimnum}
+	</select>
+
+	<select id="getFiremoimnum" resultType="_int">
+		SELECT MOIMNUM FROM
+		TW_FIREMOIM WHERE USERID=#{userid}
+	</select>
+	<select id="getmoimType" resultType="_int">
+		SELECT MOIMTYPE FROM TW_MOIM
+		WHERE MOIMNUM=#{moimnum}
+	</select>
+	<select id="replygetTotal" resultType="_int">
+		SELECT COUNT(*) FROM
+		TW_RECRUITREPLY WHERE RECRUITNUM=#{boardnum}
+	</select>
+	<select id="replygetListWithPaging"
+		resultType="com.twith.domain.ReplyDTO">
+      <![CDATA[
+         SELECT REPLYNUM,REPLYWRITER,REPLYCONTENTS,REGDATE,UPDATEDATE
+         FROM
+            (
+               SELECT /*+ INDEX_ASC(TW_RECRUITREPLY TW_RECRUITREPLY_PK) */
+               ROWNUM RN, REPLYNUM, REPLYWRITER, REPLYCONTENTS, REGDATE, UPDATEDATE FROM TW_RECRUITREPLY
+               WHERE RECRUITNUM=#{boardnum} AND ROWNUM <= #{cri.pageNum} * #{cri.amount}
+            )
+         WHERE RN > (#{cri.pageNum}-1)*#{cri.amount}
+      ]]>
+	</select>
+	<select id="replygetDetail"
+		resultType="com.twith.domain.ReplyDTO">
+		SELECT * FROM TW_RECRUITREPLY WHERE REPLYNUM=#{replynum}
+	</select>
+
+	<insert id="insert">
+		<selectKey keyProperty="moimnum" order="BEFORE"
+			resultType="_int">
+			SELECT SEQ_TW_MOIM.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO TW_MOIM
+		(MOIMNUM,MOIMNAME,MOIMTYPE,MOIMBUDGET,STARTDATE,ENDDATE,USERID,PLACENUM)
+		VALUES (#{moimnum},
+		#{moimname},#{moimtype},#{moimbudget},TO_DATE(#{startdate},'MM/DD/YYYY'),TO_DATE(#{enddate},'MM/DD/YYYY'),#{userid},#{placenum})
+	</insert>
+
+	<insert id="insertPlace">
+		INSERT INTO TW_PLACE VALUES
+		(SEQ_TW_PLACE.NEXTVAL,#{placelat},#{placelon},#{placename},#{placeaddr},#{placeroadaddr},#{placecategory},#{placephonenumber},0)
+	</insert>
+
+	<insert id="insertMember">
+		INSERT INTO TW_MOIMMEMBER
+		VALUES(SEQ_TW_M_MEMBER.NEXTVAL,#{userid},#{moimnum})
+	</insert>
+
+	<insert id="insertreq">
+		INSERT INTO TW_MOIMJOIN (MOIMJOINNUM, KINGUSERID,
+		JOINUSERID, MOIMNUM,
+		JOINCONTENTS)
+		VALUES(SEQ_TW_MOIMJOIN.NEXTVAL,
+		#{kinguserid}, #{joinuserid}, #{moimnum}, #{joincontents})
+	</insert>
+
+	<insert id="insert_with_bno">
+		<!-- selectKey : order="BEFORE" → 아래에 있는 쿼리문을 수행하기 전에 해당 쿼리문을 한번 수행한다. 
+			수행된 결과(LONG)를 boardnum이름에 세팅 -->
+		<selectKey keyProperty="recruitnum" order="BEFORE"
+			resultType="_int">
+			SELECT SEQ_TW_M_RECRUIT.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO TW_MOIMRECRUIT (RECRUITNUM, RECRUITTITLE, USERID,
+		RECRUITCONTENTS, READCNT, MOIMNUM)
+		VALUES(#{recruitnum},
+		#{recruittitle}, #{userid}, #{recruitcontents}, 0, #{moimnum}
+		)
+	</insert>
+
+	<insert id="insertChat">
+		INSERT INTO TW_MOIMCHAT
+		VALUES(SEQ_TW_MOIMCHAT.NEXTVAL,#{userid},#{moimnum},#{moimchatcontents},SYSDATE)
+	</insert>
+	<insert id="insertMessage">
+		INSERT INTO TW_FIREMOIM
+		VALUES(#{userId},#{moimnum},#{message})
+	</insert>
+
+	<insert id="replyinsert">
+		INSERT INTO TW_RECRUITREPLY
+		(REPLYNUM,REPLYWRITER,REPLYCONTENTS,RECRUITNUM)
+		VALUES(SEQ_TW_RECRUITREPLY.NEXTVAL,#{replywriter},#{replycontents},#{boardnum})
+	</insert>
+
+	<update id="updatereadcnt">
+		UPDATE TW_MOIMRECRUIT SET READCNT=(#{readcnt}+1)
+		WHERE
+		RECRUITNUM=#{recruitnum}
+	</update>
+
+	<update id="recruitupdate">
+		UPDATE TW_MOIMRECRUIT SET
+		RECRUITTITLE=#{recruittitle},
+		RECRUITCONTENTS=#{recruitcontents},
+		REGDATE=SYSDATE WHERE
+		RECRUITNUM=#{recruitnum}
+	</update>
+	<update id="updateMoim">
+		UPDATE TW_MOIM SET
+		MOIMNAME=#{moimname},MOIMTYPE=#{moimtype},MOIMBUDGET=#{moimbudget},STARTDATE
+		= TO_DATE(#{startdate},'MM/DD/YYYY'),ENDDATE =
+		TO_DATE(#{enddate},'MM/DD/YYYY'),USERID=#{userid},PLACENUM=#{placenum}
+		WHERE MOIMNUM=#{moimnum}
+	</update>
+
+	<update id="replyupdate">
+		UPDATE TW_RECRUITREPLY
+		SET
+		REPLYCONTENTS=#{replycontents}, UPDATEDATE = SYSDATE
+		WHERE
+		REPLYNUM=#{replynum}
+	</update>
+	<delete id="deleteJoin">
+		DELETE FROM TW_MOIMJOIN WHERE
+		MOIMJOINNUM=#{moimjoinnum}
+	</delete>
+
+	<delete id="deleteMember">
+		DELETE FROM TW_MOIMMEMBER WHERE USERID=#{userId}
+	</delete>
+	<delete id="deleteMoim">
+		DELETE FROM TW_MOIM WHERE MOIMNUM=#{moimnum}
+	</delete>
+	<delete id="deleteMoimMember">
+		DELETE FROM TW_MOIMMEMBER WHERE MOIMNUM=#{moimnum}
+	</delete>
+	<delete id="deleteChat">
+		DELETE FROM TW_MOIMCHAT WHERE MOIMNUM=#{moimnum}
+	</delete>
+	<delete id="deleteMoimRecruit">
+		DELETE FROM TW_MOIMRECRUIT WHERE MOIMNUM=#{moimnum}
+	</delete>
+	<delete id="deleteMoimJoin">
+		DELETE FROM TW_MOIMJOIN WHERE MOIMNUM=#{moimnum}
+	</delete>
+
+	<delete id="deleterecruit">
+		DELETE FROM TW_MOIMRECRUIT WHERE RECRUITNUM=#{recruitnum}
+	</delete>
+
+	<delete id="replydelete">
+		DELETE FROM TW_RECRUITREPLY WHERE REPLYNUM=#{replynum}
+	</delete>
+
+	<delete id="replyDeleteAll">
+		DELETE FROM TW_RECRUITREPLY WHERE RECRUITNUM=#{recruitnum}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
