@@ -39,6 +39,5 @@
           url = &quot;redirect:login&quot;; 
       } 
     return url; 
-   }
-
+  
 </code></pre>
