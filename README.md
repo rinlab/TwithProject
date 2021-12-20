@@ -19,7 +19,7 @@
 <ul>
 <li>user/login 의 Controller 코드입니다.</li>
 </ul>
-<pre>   
+<pre>   <code class="language-java"> 
    @PostMapping(&quot;/login&quot;) 
    public String login_post(UserDTO user,HttpSession session, RedirectAttributes ra) { 
        log.info(&quot;login......&quot;); 
