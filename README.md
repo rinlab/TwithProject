@@ -18,7 +18,7 @@
 
 - user/login 의 Controller 코드입니다.
 
-~~~javascript
+~~~java
     
    @PostMapping("/login") 
    public String login_post(UserDTO user,HttpSession session, RedirectAttributes ra) { 
