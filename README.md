@@ -12,6 +12,7 @@
 -----
 ## 1. 로그인/회원가입
 
+> **로그인**
 - user/login 화면입니다.
 
 ![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbfbRix%2FbtrolUjrle5%2F7fCNycFCnxKYc0jbiUVXok%2Fimg.jpg)
@@ -41,9 +42,29 @@
 
 ~~~
 
+- Controller에서 msg에 값을 받아와서 jsp에서 알맞은 팝업을 띄워줍니다.
+~~~java
+<c:if test="${msg == true}"> 
+	<script>alert('${user.userId}님 환영합니다 :)');</script> 
+</c:if> 
+<c:if test="${!empty result}"> 
+	<script>alert('회원가입을 환영합니다. 로그인을 해주세요 :)');</script> 
+</c:if>
+~~~
+
+![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcWMUA5%2FbtroxAwFnRj%2FXsbmYakUQgGfh587HL0dqk%2Fimg.png)
+
+- user/login 의 sql문입니다.
+
 ~~~sql
 <select id="login" resultType="com.twith.domain.UserDTO"> 
 SELECT * FROM TW_USER WHERE USERID=#{userId} AND USERPW=#{userPw} 
 </select>
 ~~~
+
+<br>
+
+> **회원가입**
+- user/join 화면입니다.
+![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbtU0mx%2Fbtrosv4rUUF%2FOPFSUVlwBKrSmt2qvS18X1%2Fimg.png)
 
