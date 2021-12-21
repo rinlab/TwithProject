@@ -3,13 +3,14 @@
 - 회원 파트 부분을 맡았습니다.
 - 주 사용 언어는 Java / Spring 프레임워크를 사용하여 제작하였습니다.
 
+-----
+
 ## Index
 
 1. 로그인/회원가입
 2. 아이디/비밀번호 찾기
 3. 팔로우/팔로잉 관리
 
------
 ## 1. 로그인/회원가입
 
 - user/login 화면입니다.
@@ -30,12 +31,10 @@
       if(result != null) { 
           session.setAttribute("user", result); 
           ra.addFlashAttribute("msg",true); 
-          log.info("=========로그인 성공========="); 
           url= "redirect:index"; 
       }else { 
           session.setAttribute("user", null); 
           ra.addFlashAttribute("msg",false); 
-          log.info("=========로그인 실패========="); 
           url = "redirect:login"; 
       } 
     return url; 
