@@ -3,15 +3,14 @@
 - 회원 파트 부분을 맡았습니다.
 - 주 사용 언어는 Java / Spring 프레임워크를 사용하여 제작하였습니다.
 
------
-
 ## Index
 
 1. 로그인/회원가입
 2. 아이디/비밀번호 찾기
 3. 팔로우/팔로잉 관리
 
-### 1. 로그인/회원가입
+-----
+## 1. 로그인/회원가입
 
 - user/login 화면입니다.
 
@@ -19,7 +18,7 @@
 
 - user/login 의 Controller 코드입니다.
 
-~~~java
+~~~javascript
     
    @PostMapping("/login") 
    public String login_post(UserDTO user,HttpSession session, RedirectAttributes ra) { 
@@ -40,5 +39,11 @@
     return url; 
    }
 
+~~~
+
+~~~sql
+<select id="login" resultType="com.twith.domain.UserDTO"> 
+SELECT * FROM TW_USER WHERE USERID=#{userId} AND USERPW=#{userPw} 
+</select>
 ~~~
 
