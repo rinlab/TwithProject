@@ -15,12 +15,12 @@
 3. 팔로우/팔로잉 관리
 
 -----
-## 1. 로그인/회원가입
+### 1. 로그인/회원가입
 
 > **로그인**
 - user/login 화면입니다.
 
-![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbfbRix%2FbtrolUjrle5%2F7fCNycFCnxKYc0jbiUVXok%2Fimg.jpg)
+<p align="center"><img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbfbRix%2FbtrolUjrle5%2F7fCNycFCnxKYc0jbiUVXok%2Fimg.jpg" width="500"/></p>
 
 - user/login 의 Controller 코드입니다.
 
@@ -57,7 +57,7 @@
 </c:if>
 ~~~
 
-![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcWMUA5%2FbtroxAwFnRj%2FXsbmYakUQgGfh587HL0dqk%2Fimg.png)
+<p align="center"><img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcWMUA5%2FbtroxAwFnRj%2FXsbmYakUQgGfh587HL0dqk%2Fimg.png" width="500"/></p>
 
 - user/login 의 sql문입니다.
 
@@ -71,5 +71,5 @@ SELECT * FROM TW_USER WHERE USERID=#{userId} AND USERPW=#{userPw}
 
 > **회원가입**
 - user/join 화면입니다.
-![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbtU0mx%2Fbtrosv4rUUF%2FOPFSUVlwBKrSmt2qvS18X1%2Fimg.png)
 
+<p align="center"><img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbtU0mx%2Fbtrosv4rUUF%2FOPFSUVlwBKrSmt2qvS18X1%2Fimg.png" width="500"/></p>
