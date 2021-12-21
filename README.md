@@ -1,5 +1,6 @@
 <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FJXO6s%2FbtrgvSMeYFk%2FKYmgNkWPVOSnlmpugK6ahk%2Fimg.png" width="500" style="float:center;"/>
 <br>
+
 # Twith
 - 여행 모임/ 여행 정보 관련 사이트 팀프로젝트입니다.
 - 회원 파트 부분을 맡았습니다.
