@@ -71,5 +71,61 @@ SELECT * FROM TW_USER WHERE USERID=#{userId} AND USERPW=#{userPw}
 > **회원가입**
 - user/join 화면입니다.
 
-![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbtU0mx%2Fbtrosv4rUUF%2FOPFSUVlwBKrSmt2qvS18X1%2Fimg.png)
+![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FYwWht%2Fbtrox11URNT%2FaLhKR3jicpialI4ERNlCiK%2Fimg.png)
 
+- user/join 의 Controller 코드입니다.
+~~~java
+@PostMapping("/join") 
+public String join(UserDTO user,RedirectAttributes ra) { 
+	service.join(user); 
+	ra.addFlashAttribute("result", user.getUserId()); 
+
+	return "redirect:/user/index"; 
+}
+~~~
+<br>
+
+- 중복체크를 누르면 onclick 함수를 통하여 ajax로 '사용가능/불가능 문구를 띄워줍니다.'
+- 중복체크(checkId) 함수 코드입니다.
+
+~~~javascript
+function checkId() {
+	let idInput = document.joinform.userId;
+	let userId = idInput.value;
+	let spanTag = document.getElementById('idCheck');
+	if (userId == "" || userId == null) {
+		alert("아이디를 입력하세요!");
+		idInput.focus();
+		return false;
+	}
+	if (userId.length < 5 || userId.length > 7) {
+		alert("아이디는 5자리 이상 7자리 이하로 입력하세요!");
+		idInput.value=null;
+		idInput.focus();
+		return false;
+	}
+	let hangle = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+	if (hangle.test(userId)) {
+		alert("아이디에는 한글을 쓸 수 없습니다!");
+		idInput.value=null;
+		idInput.focus();
+		return false;
+	}
+	$.ajax({
+		url : "/user/checkId?userId="+userId,
+		type : 'POST',
+		dataType : 'text',
+		success : function(cnt) {
+			console.log(cnt);
+			if (cnt != "<Integer>1</Integer>") {
+				spanTag.innerHTML = "사용 가능한 아이디입니다."
+			} else {
+				spanTag.innerHTML = "중복된 아이디입니다."
+			}
+		},
+		error : function() {
+			console.log("ajax실패");
+		}
+	})
+}
+~~~
